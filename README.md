@@ -111,7 +111,7 @@ end
 
 ## License
 
-The original version of this library is copyright 2014 Geoffroy Planquart [mongoid-fixture_set](https://github.com/Aethelflaed/mongoid-fixture_set)
+The original version of this library is [mongoid-fixture_set](https://github.com/Aethelflaed/mongoid-fixture_set) by Geoffroy Planquart in 2014
 
 ## Bugs or Requests
 
