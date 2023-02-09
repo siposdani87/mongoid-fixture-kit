@@ -8,15 +8,17 @@
 
 This package is a Ruby gem that provides a way to load sample data into a MongoDB database for testing purposes. It provides a simple and convenient way to manage test data by defining fixtures in YAML files, which can be loaded into the database before running tests.
 
-This ruby gem aims to provide fixtures for Mongoid the same way you have them with ActiveRecord.
+This library aims to provide fixtures for Mongoid the same way you have them with ActiveRecord.
 
-## Install
+## Getting Started
+
+### Installing
 
 ```ruby
 gem 'mongoid-fixture_kit'
 ```
 
-## How to use
+### Usage
 
 In your tests, add:
 
@@ -44,35 +46,28 @@ class UsersControllerTest < ActionController::TestCase
 end
 ```
 
-## Features
+### Features
 
-- Creation of a document from an YAML file.
-- `belongs_to` relations
+- Creation of a document from a YAML file.
 - ERB inside YAML files
-- YAML DEFAULTS feature
+- `belongs_to` relations
 - Polymorphic `belongs_to`
 - `has_many` relations
 - `has_and_belongs_to_many` relations
 - `TestHelper` module to include in your tests
 
-## Notes
-
-Original fixtures from `ActiveRecord` also uses a selection based on `class_names` for which I haven't seen any use case, so I did not port this feature yet.
-
-I did not find how `ActiveRecord::TestFixtures` defines its `fixture_table_names` so I'm simply searching for *all* YAML files under `self.fixture_path`, which is enough for what I want.
-
-Array attributes are receiving a special treatment, i.e. they are joined with new values, not replaced by the new one. This is used for `has_and_belongs_to_many` relations.
+### Notes
 
 Documents are stored with a special attribute `__fixture_name` which is used to retrieve it and establish relations.
 
-`Mongoid::Document` has an `attr_accessor` defined for `__fixture_name` so it doesn't pose any problem if you try to `dup` a document for example.
+`Mongoid::Document` has a `attr_accessor` defined for `__fixture_name`, so it doesn't pose any problem if you try to `dup` a document for example.
 
-## Changes compared to ActiveRecord
+### Changes compared to ActiveRecord
 
 - There is an option to load fixtures only once.
 - Fixture accessor methods are defined publicly.
 
-This changes are here to let you create another class holding persistent data inside your tests.
+These changes are here to let you create another class holding persistent data inside your tests.
 
 ```ruby
 class TestData
@@ -115,7 +110,7 @@ The original version of this library is [mongoid-fixture_set](https://github.com
 
 ## Bugs or Requests
 
-If you encounter any problems feel free to open an [issue](https://github.com/siposdani87/sui-js/issues/new?template=bug_report.md). If you feel the library is missing a feature, please raise a [ticket](https://github.com/siposdani87/sui-js/issues/new?template=feature_request.md). Pull request are also welcome.
+If you encounter any problems feel free to open an [issue](https://github.com/siposdani87/mongoid-fixture-kit/issues/new?template=bug_report.md). If you feel the library is missing a feature, please raise a [ticket](https://github.com/siposdani87/mongoid-fixture-kit/issues/new?template=feature_request.md). Pull request are also welcome.
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=b992bb656478&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
