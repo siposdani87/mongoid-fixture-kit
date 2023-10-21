@@ -76,6 +76,8 @@ module Mongoid
           value = attributes[key] || document[key]
           if key.include?('_translations')
             document.public_send("#{key}=", value)
+          elsif attributes[key].is_a?(Array) || document[key].is_a?(Array)
+            document[key] = Array(attributes[key]) + Array(document[key])
           else
             document[key] = value
           end
@@ -90,12 +92,17 @@ module Mongoid
         document.relations.each do |name, relation|
           case macro_from_relation(relation)
           when :embeds_one
-            embedded_document_set_default_values(document.public_send(relation.name), document[name]) if (document.changes[name] && !document.changes[name][1].nil?) || (is_new && document[name])
+            if (document.changes[name] && !document.changes[name][1].nil?) ||
+              (is_new && document[name])
+              embedded_document = document.public_send(relation.name)
+              embedded_document_set_default_values(embedded_document, document[name])
+            end
           when :embeds_many
-            if (document.changes[name] && !document.changes[name][1].nil?) || (is_new && document[name])
+            if (document.changes[name] && !document.changes[name][1].nil?) ||
+              (is_new && document[name])
               embedded_documents = document.public_send(relation.name)
-              embedded_documents.each_with_index do |embedded, i|
-                embedded_document_set_default_values(embedded, document[name][i])
+              embedded_documents.each_with_index do |embedded_document, i|
+                embedded_document_set_default_values(embedded_document, document[name][i])
               end
             end
           when :belongs_to
@@ -116,6 +123,8 @@ module Mongoid
         attributes.delete('_id')
         document.fields.select do |k, v|
           k != '_id' && !v.default_val.nil? && attributes[k] == document[k]
+        end.each do |k, _v|
+          attributes.delete(k)
         end
       end
 
