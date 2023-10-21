@@ -1,0 +1,6 @@
+test:
+  clients:
+    default:
+      database: mongoid_fixture_kit_test
+      hosts:
+        - localhost:27017

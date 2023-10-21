@@ -1,0 +1,4 @@
+organization1:
+  name: <%= '1 Organisation' %>
+  groups:
+    - print
