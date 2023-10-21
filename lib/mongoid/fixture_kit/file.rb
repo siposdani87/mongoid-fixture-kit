@@ -32,7 +32,7 @@ module Mongoid
       end
 
       def render(content)
-        context = Mongoid::FixtureKit::RenderContext.new
+        context = Mongoid::FixtureKit::RenderContext.create_subclass.new
         ERB.new(content).result(context.binder)
       end
 

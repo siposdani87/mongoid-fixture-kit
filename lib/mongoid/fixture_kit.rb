@@ -33,6 +33,10 @@ module Mongoid
       @fixtures = read_fixture_files
     end
 
+    def self.context_class
+      @context_class ||= Class.new
+    end
+
     delegate :[], to: :fixtures
 
     private

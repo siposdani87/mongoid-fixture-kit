@@ -26,7 +26,7 @@ module Mongoid
       alias to_hash fixture
 
       def find
-        raise FixtureClassNotFound, _('No class attached to find.') unless model_class
+        raise FixtureClassNotFound, 'No class attached to find.' unless model_class
         model_class.unscoped do
           model_class.find_by('__fixture_name' => name)
         end
