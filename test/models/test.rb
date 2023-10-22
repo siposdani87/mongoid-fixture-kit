@@ -3,4 +3,3 @@ class Test
 
   field :value
 end
-

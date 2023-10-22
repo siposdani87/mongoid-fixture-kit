@@ -14,22 +14,21 @@ class LoadOnceTest < BaseTest
     end
   end
 
-  Mongoid::FixtureKit.context_class.send :include, FixtureLoadCount
+  Mongoid::FixtureKit.context_class.public_send(:include, FixtureLoadCount)
 
-  def teardown
-  end
+  def teardown; end
 
-  def count_equal_1
-    assert_equal 1, self.class.count
+  def count_equal_one
+    assert_equal(1, self.class.count)
     begin
       tests(:test1)
-      assert true
-    rescue => e
-      assert false, "#{e}\n#{e.backtrace.join("\n")}"
+      assert(true)
+    rescue StandardError => e
+      assert(false, "#{e}\n#{e.backtrace.join("\n")}")
     end
   end
 
   5.times do |i|
-    alias_method "test_load_once_#{i}", :count_equal_1
+    alias_method "test_load_once_#{i}", :count_equal_one
   end
 end

@@ -16,13 +16,11 @@ module Mongoid
       end
 
       included do
-        # rubocop:disable ThreadSafety/ClassAndModuleAttributes
         class_attribute :fixture_path
         class_attribute :fixture_kit_names
         class_attribute :load_fixtures_once
         class_attribute :cached_fixtures
         class_attribute :util
-        # rubocop:enable ThreadSafety/ClassAndModuleAttributes
 
         self.fixture_path = nil
         self.fixture_kit_names = [].freeze
@@ -45,25 +43,28 @@ module Mongoid
 
         def setup_fixture_accessors(fixture_kit_names = nil)
           fixture_kit_names = Array(fixture_kit_names || self.fixture_kit_names)
-          methods = Module.new do
-            fixture_kit_names.each do |fs_name|
-              fs_name = fs_name.to_s
-              accessor_name = fs_name.tr('/', '_').to_sym
-              define_method(accessor_name) do |*fixture_names|
-                force_reload = false
-                force_reload = fixture_names.pop if fixture_names.last == true || fixture_names.last == :reload
-                @fixture_cache[fs_name] ||= {}
-                instances = fixture_names.map do |f_name|
-                  f_name = f_name.to_s
-                  @fixture_cache[fs_name].delete(f_name) if force_reload
-                  raise FixtureNotFound, "No fixture named '#{f_name}' found for fixture set '#{fs_name}'" unless @loaded_fixtures[fs_name] && @loaded_fixtures[fs_name][f_name]
-                  @fixture_cache[fs_name][f_name] ||= @loaded_fixtures[fs_name][f_name].find
+          methods =
+            Module.new do
+              fixture_kit_names.each do |fs_name|
+                fs_name = fs_name.to_s
+                accessor_name = fs_name.tr('/', '_').to_sym
+                define_method(accessor_name) do |*fixture_names|
+                  force_reload = false
+                  force_reload = fixture_names.pop if fixture_names.last == true || fixture_names.last == :reload
+                  @fixture_cache[fs_name] ||= {}
+                  instances =
+                    fixture_names.map do |f_name|
+                      f_name = f_name.to_s
+                      @fixture_cache[fs_name].delete(f_name) if force_reload
+                      raise(FixtureNotFound, "No fixture named '#{f_name}' found for fixture set '#{fs_name}'") unless @loaded_fixtures[fs_name] && @loaded_fixtures[fs_name][f_name]
+
+                      @fixture_cache[fs_name][f_name] ||= @loaded_fixtures[fs_name][f_name].find
+                    end
+                  instances.length == 1 ? instances.first : instances
                 end
-                instances.length == 1 ? instances.first : instances
               end
             end
-          end
-          include methods
+          include(methods)
         end
       end
 

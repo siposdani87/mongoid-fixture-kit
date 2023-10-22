@@ -5,12 +5,9 @@ class FixturesTest < BaseTest
   self.fixture_path = 'test/fixtures'
 
   def test_should_access_fixtures
-    begin
-      _geoffroy = users(:geoffroy)
-      assert true
-    rescue StandardError => e
-      puts e
-      assert false, 'An exception was thrown'
-    end
+    _geoffroy = users(:geoffroy)
+    assert(true)
+  rescue StandardError => e
+    assert(false, e)
   end
 end

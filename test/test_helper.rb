@@ -1,16 +1,23 @@
 require 'bundler/setup'
+require 'minitest/reporters'
 require 'simplecov'
+require 'simplecov_json_formatter'
+
+Minitest::Reporters.use!([Minitest::Reporters::ProgressReporter.new])
+
 SimpleCov.configure do
   add_filter '/test/'
 end
-SimpleCov.start if ENV['COVERAGE']
+SimpleCov.start do
+  formatter(SimpleCov::Formatter::JSONFormatter)
+end
 
 require 'minitest/autorun'
 require 'mongoid'
 
-require File.expand_path("../../lib/mongoid-fixture_kit", __FILE__)
+require File.expand_path('../lib/mongoid_fixture_kit', __dir__)
 
-Mongoid.load!("#{File.dirname(__FILE__)}/mongoid.yml", "test")
+Mongoid.load!("#{File.dirname(__FILE__)}/mongoid.yml", 'test')
 
 Dir["#{File.dirname(__FILE__)}/models/*.rb"].each { |f| require f }
 

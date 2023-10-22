@@ -5,4 +5,3 @@ class Item
 
   field :name
 end
-

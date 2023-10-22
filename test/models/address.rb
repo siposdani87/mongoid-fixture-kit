@@ -8,4 +8,3 @@ class Address
 
   belongs_to :organisation
 end
-

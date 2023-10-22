@@ -5,4 +5,3 @@ class Home
 
   embeds_one :address, as: :place
 end
-
