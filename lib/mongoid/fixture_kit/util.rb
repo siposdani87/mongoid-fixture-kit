@@ -121,9 +121,11 @@ module Mongoid
       def embedded_document_set_default_values(document, attributes)
         sanitize_new_embedded_documents(document, is_new: true)
         attributes.delete('_id')
-        document.fields.select do |k, v|
-          k != '_id' && !v.default_val.nil? && attributes[k] == document[k]
-        end.each do |k, _v|
+        removable_fields =
+          document.fields.select do |k, v|
+            k != '_id' && v.default_val.present? && attributes[k] == document[k]
+          end
+        removable_fields.each do |k, _v|
           attributes.delete(k)
         end
       end
