@@ -48,6 +48,9 @@ module Mongoid
               fixture_kit_names.each do |fs_name|
                 fs_name = fs_name.to_s
                 accessor_name = fs_name.tr('/', '_').to_sym
+
+                next if method_defined?(accessor_name)
+
                 define_method(accessor_name) do |*fixture_names|
                   force_reload = false
                   force_reload = fixture_names.pop if fixture_names.last == true || fixture_names.last == :reload
