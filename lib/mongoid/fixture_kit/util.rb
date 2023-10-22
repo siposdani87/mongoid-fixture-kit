@@ -76,7 +76,7 @@ module Mongoid
           value = attributes[key] || document[key]
           if key.include?('_translations')
             document.public_send("#{key}=", value)
-          elsif attributes[key].is_a?(Array) || document[key].is_a?(Array)
+          elsif attributes[key].instance_of?(Array) || document[key].instance_of?(Array)
             document[key] = Array(attributes[key]) + Array(document[key])
           else
             document[key] = value
