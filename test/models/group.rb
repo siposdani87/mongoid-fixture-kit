@@ -10,4 +10,3 @@ class Group
 
   belongs_to :something, polymorphic: true
 end
-

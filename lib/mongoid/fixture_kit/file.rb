@@ -6,7 +6,7 @@ module Mongoid
       include Enumerable
 
       def self.open(file)
-        x = new file
+        x = new(file)
         block_given? ? yield(x) : x
       end
 
@@ -23,10 +23,15 @@ module Mongoid
 
       def rows
         return @rows if @rows
+
         begin
           data = YAML.safe_load(render(::File.read(@file)))
         rescue ArgumentError, Psych::SyntaxError => e
-          raise FormatError, "a YAML error occurred parsing #{@file}. Please note that YAML must be consistently indented using spaces. Tabs are not allowed. Please have a look at http://www.yaml.org/faq.html\nThe exact error was:\n #{e.class}: #{e}", e.backtrace
+          raise(
+            FormatError,
+            "a YAML error occurred parsing #{@file}. Please note that YAML must be consistently indented using spaces. Tabs are not allowed. Please have a look at http://www.yaml.org/faq.html\nThe exact error was:\n #{e.class}: #{e}",
+            e.backtrace
+          )
         end
         @rows = data ? validate(data).to_a : []
       end
@@ -37,8 +42,9 @@ module Mongoid
       end
 
       def validate(data)
-        raise FormatError, 'fixture is not a hash' unless data.is_a?(Hash) || data.is_a?(YAML::Omap)
-        raise FormatError unless data.all? { |_name, row| row.is_a?(Hash) }
+        raise(FormatError, 'fixture is not a hash') unless data.is_a?(Hash) || data.is_a?(YAML::Omap)
+        raise(FormatError) unless data.all? { |_name, row| row.is_a?(Hash) }
+
         data
       end
     end

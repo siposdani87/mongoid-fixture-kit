@@ -3,9 +3,7 @@ module Mongoid
     class Fixture
       include Enumerable
 
-      attr_reader :name
-      attr_reader :fixture
-      attr_reader :model_class
+      attr_reader :name, :fixture, :model_class
 
       def initialize(name, fixture, model_class)
         @name = name
@@ -26,9 +24,10 @@ module Mongoid
       alias to_hash fixture
 
       def find
-        raise FixtureClassNotFound, 'No class attached to find.' unless model_class
+        raise(FixtureClassNotFound, 'No class attached to find.') unless model_class
+
         model_class.unscoped do
-          model_class.find_by('__fixture_name' => name)
+          model_class.find_by(__fixture_name: name)
         end
       end
     end

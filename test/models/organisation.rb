@@ -6,4 +6,3 @@ class Organisation
 
   has_many :groups, as: :something
 end
-
