@@ -16,6 +16,6 @@ Gem::Specification.new do |s|
   s.files = Dir['{lib}/**/*', 'LICENSE', 'Rakefile', 'README.rdoc']
 
   s.add_dependency('activesupport', '~> 7.0')
-  s.add_dependency('mongoid',       '~> 7.0')
+  s.add_dependency('mongoid',       '>= 7.0')
   s.metadata['rubygems_mfa_required'] = 'true'
 end
