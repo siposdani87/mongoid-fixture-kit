@@ -53,7 +53,7 @@ module Mongoid
 
                 define_method(accessor_name) do |*fixture_names|
                   force_reload = false
-                  force_reload = fixture_names.pop if fixture_names.last == true || fixture_names.last == :reload
+                  force_reload = fixture_names.pop if [true, :reload].include?(fixture_names.last)
                   @fixture_cache[fs_name] ||= {}
                   instances =
                     fixture_names.map do |f_name|

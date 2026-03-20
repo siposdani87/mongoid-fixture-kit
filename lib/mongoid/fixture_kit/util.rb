@@ -44,8 +44,7 @@ module Mongoid
         fixtures_map = {}
         fixture_kits =
           files_to_read.map do |fs_name|
-            fixtures_map[fs_name] =
-              Mongoid::FixtureKit.new(fs_name, class_names[fs_name], ::File.join(fixtures_directory, fs_name))
+            fixtures_map[fs_name] = Mongoid::FixtureKit.new(fs_name, class_names[fs_name], ::File.join(fixtures_directory, fs_name))
           end
 
         update_all_loaded_fixtures(fixtures_map)
@@ -84,11 +83,11 @@ module Mongoid
 
         keys = (attributes.keys + document.attributes.keys).uniq
         keys.each do |key|
-          value = attributes[key] || document[key]
+          value = attributes.key?(key) ? attributes[key] : document[key]
           if key.include?('_translations')
             document.public_send("#{key}=", value)
           elsif attributes[key].instance_of?(Array) || document[key].instance_of?(Array)
-            document[key] = Array(attributes[key]) + Array(document[key])
+            document[key] = (Array(attributes[key]) + Array(document[key])).uniq
           else
             document[key] = value
           end
@@ -115,19 +114,14 @@ module Mongoid
                (is_new && document[name])
 
               embedded_documents = document.public_send(relation.name)
-              embedded_documents.each_with_index do |embedded_document, i|
-                embedded_document_set_default_values(embedded_document, document[name][i])
+              embedded_documents.each_with_index do |embed_doc, i|
+                embedded_document_set_default_values(embed_doc, document[name][i])
               end
             end
           when :belongs_to
             if is_new && document.attributes[name]
               value = document.attributes.delete(name)
-              if value.is_a?(Hash)
-                raise(
-                  Mongoid::FixtureKit::FixtureError,
-                  'Unable to create nested document inside an embedded document'
-                )
-              end
+              raise(Mongoid::FixtureKit::FixtureError, 'Unable to create nested document inside an embedded document') if value.is_a?(Hash)
 
               doc = find_or_create_document(relation.class_name, value)
               document.attributes[relation.foreign_key] = doc.id
@@ -143,7 +137,7 @@ module Mongoid
           document.fields.select do |k, v|
             k != '_id' && v.default_val.present? && attributes[k] == document[k]
           end
-        removable_fields.each do |k, _v|
+        removable_fields.each_key do |k|
           attributes.delete(k)
         end
       end
@@ -157,7 +151,7 @@ module Mongoid
           document['__fixture_name'] = fixture_name
           begin
             save_document(document)
-          rescue StandardError => e
+          rescue Mongo::Error, Mongoid::Errors::MongoidError => e
             if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
               Rails.logger.debug(document.attributes)
               Rails.logger.debug(e)
@@ -192,7 +186,8 @@ module Mongoid
         document.relations.each do |name, relation|
           macro = macro_from_relation(relation)
           next unless %i[embeds_one embeds_many].include?(macro)
-          next unless attributes.key?(name) && (attributes[name].is_a?(Hash) || attributes[name].is_a?(Array))
+          next unless attributes.key?(name)
+          next unless attributes[name].is_a?(Hash) || attributes[name].is_a?(Array)
 
           embedded_attrs[name] = attributes.delete(name).dup
         end
@@ -282,12 +277,7 @@ module Mongoid
         return if value.nil?
 
         if value.is_a?(Hash)
-          if relation.polymorphic?
-            raise(
-              Mongoid::FixtureKit::FixtureError,
-              'Unable to create document from nested attributes in a polymorphic relation'
-            )
-          end
+          raise(Mongoid::FixtureKit::FixtureError, 'Unable to create document from nested attributes in a polymorphic relation') if relation.polymorphic?
 
           document = relation.class_name.constantize.new
           value = unmarshall_fixture(nil, value, relation.class_name)
@@ -296,7 +286,8 @@ module Mongoid
           return
         end
 
-        if relation.polymorphic? && value.sub!(/\s*\(([^)]*)\)\s*/, '')
+        if relation.polymorphic? && value.match?(/\s*\([^)]*\)\s*/)
+          value = value.sub(/\s*\(([^)]*)\)\s*/, '')
           type = Regexp.last_match(1)
           attributes[relation.inverse_type] = type
           attributes[relation.foreign_key] = find_or_create_document(type, value).id

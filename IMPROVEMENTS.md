@@ -21,36 +21,36 @@
 
 ## Round 2 — Security
 
-1. **Create `.env.example`** with placeholder values so contributors know which env vars to set
+1. ~~**Create `.env.example`** with placeholder values~~ DONE
 
 ## Round 2 — Build and Lint
 
-1. **Fix RuboCop offenses** — 12 violations, 9 autocorrectable via `rubocop -A`
-2. **`.rubocop.yml` invalid `TargetRubyVersion: 3.1.x`** — should be `3.1`
-3. **Re-enable `Lint/ShadowingOuterLocalVariable`** — currently disabled, masks real bugs
-4. **Add Ruby 3.4 to CI matrix** — current stable missing
-5. **Add Linux platform to `Gemfile.lock`** — `bundle lock --add-platform x86_64-linux` for CI
+1. ~~**Fix RuboCop offenses** — all resolved, 0 offenses~~ DONE
+2. ~~**`.rubocop.yml` invalid `TargetRubyVersion: 3.1.x`** — fixed to `3.1`~~ DONE
+3. ~~**Re-enable `Lint/ShadowingOuterLocalVariable`** — enabled and fixed~~ DONE
+4. ~~**Add Ruby 3.4 to CI matrix**~~ DONE
+5. ~~**Add Linux platform to `Gemfile.lock`**~~ DONE
 
 ## Round 2 — Code Quality (Bugs)
 
-1. **`false`/`nil` values lost in `update_document`** — `attributes[key] || document[key]` skips `false`; use `attributes.key?(key) ? attributes[key] : document[key]` (util.rb:87)
-2. **Array concatenation without dedup** — HABTM can get duplicate IDs; add `.uniq` (util.rb:91)
-3. **`find_or_create_document` still rescues broad `StandardError`** — narrow to `Mongo::Error, Mongoid::Errors::MongoidError` (util.rb:160)
-4. **`unmarshall_belongs_to` mutates string via `sub!`** — use non-destructive `sub` (util.rb:299)
+1. ~~**`false`/`nil` values lost in `update_document`** — fixed with `attributes.key?` check~~ DONE
+2. ~~**Array concatenation without dedup** — added `.uniq`~~ DONE
+3. ~~**`find_or_create_document` rescues broad `StandardError`** — narrowed to `Mongo::Error, Mongoid::Errors::MongoidError`~~ DONE
+4. ~~**`unmarshall_belongs_to` mutates string via `sub!`** — changed to non-destructive `match?`/`sub`~~ DONE
 
 ## Round 2 — Tests
 
-1. **`load_once_test.rb` still uses `begin/rescue/assert(false)`** — replace with `assert_nothing_raised`
-2. **`file_test.rb` empty blocks trigger RuboCop** — use `f.to_a` instead
-3. **Missing unit tests** — `ClassCache`, `RenderContext`, `Fixture#each`/`Fixture#[]`, non-hash row `FormatError`
-4. **Split mega-test** `test_should_create_fixtures` (20+ assertions) into focused per-relation tests
+1. ~~**`load_once_test.rb` uses `begin/rescue/assert(false)`** — replaced with `assert_nothing_raised`~~ DONE
+2. ~~**`file_test.rb` empty blocks** — replaced with `f.to_a`~~ DONE
+3. ~~**Missing unit tests** — added ClassCache, RenderContext, Fixture, non-hash row FormatError~~ DONE
+4. ~~**Split mega-test** — split into BelongsTo, HasMany, HABTM, Embedded, DocumentCount tests~~ DONE
 
 ## Round 2 — Docs and CI
 
-1. **README missing compatibility matrix** — tested Ruby and Mongoid versions
-2. **README missing `DEFAULTS` key documentation**
-3. **SonarCloud coverage broken** — test job doesn't upload artifacts for sonarcloud job
-4. **`test.sh` not integrated into CI** — rubocop JSON report not produced in CI
+1. ~~**README missing compatibility matrix**~~ DONE
+2. ~~**README missing `DEFAULTS` key documentation**~~ DONE
+3. ~~**SonarCloud coverage broken** — added artifact upload/download between jobs~~ DONE
+4. ~~**`test.sh` not integrated into CI** — CI now produces rubocop JSON report~~ DONE
 
 ## Round 2 — Lower Priority
 

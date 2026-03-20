@@ -1,7 +1,7 @@
-require:
+plugins:
   - rubocop-rake
 AllCops:
-  TargetRubyVersion: 3.1.x
+  TargetRubyVersion: 3.1
   EnabledByDefault: true
 
 # Customize rules
@@ -38,6 +38,9 @@ Layout/LineLength:
 Lint/ConstantResolution:
   Enabled: false
 Lint/ShadowingOuterLocalVariable:
-  Enabled: false
+  Enabled: true
 Bundler/GemComment:
   Enabled: false
+Style/StringHashKeys:
+  Exclude:
+    - 'test/**/*'

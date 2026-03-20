@@ -56,6 +56,7 @@ end
 - `has_many` relations
 - `has_and_belongs_to_many` relations
 - Embedded documents (`embeds_one`, `embeds_many`)
+- `DEFAULTS` key for shared fixture attributes
 - `TestHelper` module to include in your tests
 
 ### ERB in Fixtures
@@ -80,6 +81,32 @@ user_john:
 ```
 
 This will set `username` to `"user_john"` and `email` to `"user_john@example.com"`.
+
+### Defaults
+
+Use the `DEFAULTS` key to define shared attributes for all fixtures in a file:
+
+```yaml
+DEFAULTS:
+  role: member
+
+admin:
+  name: Admin
+  role: admin
+
+regular_user:
+  name: Regular User
+```
+
+The `DEFAULTS` entry is removed during loading and is not inserted as a document.
+
+### Compatibility
+
+| Dependency | Supported versions |
+|---|---|
+| Ruby | 3.1, 3.2, 3.3, 3.4 |
+| Mongoid | 7.x, 8.x, 9.x |
+| Rails (ActiveSupport) | 7.0+ |
 
 ### Notes
 

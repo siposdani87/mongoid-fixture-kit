@@ -9,7 +9,7 @@ module Mongoid
       end
 
       assert_equal(6, fixtures.length)
-      assert_equal('school', fixtures.first[0])
+      assert_equal('school', fixtures.first.first)
       assert_equal('School', fixtures.first[1]['name'])
       assert_equal('school0', fixtures[1][0])
       assert_equal('School 0', fixtures[1][1]['name'])
@@ -32,9 +32,7 @@ module Mongoid
       tmpfile.rewind
 
       assert_raises(Mongoid::FixtureKit::FormatError) do
-        Mongoid::FixtureKit::File.open(tmpfile.path) do |f|
-          f.each { |_name, _row| }
-        end
+        Mongoid::FixtureKit::File.open(tmpfile.path, &:to_a)
       end
     ensure
       tmpfile&.close
@@ -63,9 +61,20 @@ module Mongoid
       tmpfile.rewind
 
       assert_raises(Mongoid::FixtureKit::FormatError) do
-        Mongoid::FixtureKit::File.open(tmpfile.path) do |f|
-          f.each { |_name, _row| }
-        end
+        Mongoid::FixtureKit::File.open(tmpfile.path, &:to_a)
+      end
+    ensure
+      tmpfile&.close
+      tmpfile&.unlink
+    end
+
+    def test_should_raise_format_error_for_non_hash_row_values
+      tmpfile = Tempfile.new(['bad_rows', '.yml'])
+      tmpfile.write("valid_key: just_a_string\n")
+      tmpfile.rewind
+
+      assert_raises(Mongoid::FixtureKit::FormatError) do
+        Mongoid::FixtureKit::File.open(tmpfile.path, &:to_a)
       end
     ensure
       tmpfile&.close
