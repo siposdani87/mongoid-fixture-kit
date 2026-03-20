@@ -210,7 +210,9 @@ module Mongoid
           end
 
           document.public_send("#{name}=", attrs)
-        rescue Mongoid::Errors::MongoidError
+        rescue StandardError
+          # Fallback to bracket notation when setter fails (e.g., embedded model
+          # setters that depend on parent context not yet available during construction)
           document[name] = attrs
         end
       end
