@@ -16,7 +16,7 @@ All items completed.
 ## Medium — Metadata and Docs
 
 1. ~~**Missing gemspec metadata** — Add `homepage_uri`, `source_code_uri`, `changelog_uri`, `bug_tracker_uri`~~ DONE
-2. ~~**No CHANGELOG.md** — Version jumped 0.3.1 to 0.4.0 with no record of changes~~ DONE
+2. ~~**No CHANGELOG.md** — Replaced with auto-generated GitHub Release notes~~ DONE
 3. ~~**`sonar-project.properties` version is stale** — Still says 0.3.1, should be 0.4.0~~ DONE
 4. ~~**README uses deprecated Rails 4 syntax** — `get :show, id: @user` should be `get :show, params: { id: @user }`~~ DONE
 5. ~~**README doesn't document ERB or `$LABEL` support** — Both are supported features but undocumented~~ DONE

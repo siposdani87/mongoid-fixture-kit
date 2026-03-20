@@ -51,3 +51,21 @@ Tests require a running MongoDB instance on `localhost:27017`. See `test/mongoid
 
 - `master` is the release branch
 - `develop` is the main development branch; PRs target `master`
+
+## Commit Conventions
+
+Use Conventional Commits format:
+
+- `feat:` — new feature (minor version bump)
+- `fix:` — bug fix (patch version bump)
+- `docs:` — documentation changes
+- `test:` — test additions/changes
+- `chore:` — maintenance, CI, dependencies
+
+Example: `feat: add support for embeds_many relations`
+
+## Release Flow
+
+1. Development happens on `develop` with Conventional Commit messages
+2. `/release` skill merges develop → master, creates tag, pushes
+3. Tag push triggers `gem-publish.yml` which publishes to RubyGems and creates a GitHub Release with auto-generated notes
