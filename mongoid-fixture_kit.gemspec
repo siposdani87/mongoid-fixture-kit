@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/siposdani87/mongoid-fixture-kit'
   s.summary     = 'Fixtures for Rails Mongoid'
   s.description = 'Use fixtures with Mongoid the same way you did with ActiveRecord'
-  s.required_ruby_version = '>= 3.1.0'
+  s.required_ruby_version = '>= 3.2.0'
 
   s.files = Dir['{lib}/**/*', 'LICENSE', 'Rakefile', 'README.md']
 
@@ -21,4 +21,5 @@ Gem::Specification.new do |s|
   s.metadata['homepage_uri'] = s.homepage
   s.metadata['source_code_uri'] = s.homepage
   s.metadata['bug_tracker_uri'] = "#{s.homepage}/issues"
+  s.metadata['changelog_uri'] = "#{s.homepage}/releases"
 end

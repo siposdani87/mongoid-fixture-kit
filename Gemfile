@@ -10,7 +10,6 @@ group :development do
 end
 
 group :test do
-  gem 'pry-nav', '~> 1.0'
   gem 'simplecov', '~> 0.22'
   gem 'simplecov_json_formatter', '~> 0.1'
 

@@ -28,6 +28,7 @@ user1:
       address:
         city: Strasbourg
         real: true
+        organisation: organization1
 user 2é:
   firstname: user2
   main_group:

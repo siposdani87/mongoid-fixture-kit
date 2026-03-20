@@ -4,7 +4,7 @@ module Mongoid
   class FileTest < BaseTest
     def test_should_parse_yaml_with_erb
       fixtures = []
-      Mongoid::FixtureKit::File.open('test/fixtures/schools.yml') do |f|
+      Mongoid::FixtureKit::File.parse('test/fixtures/schools.yml') do |f|
         f.each { |name, row| fixtures << [name, row] }
       end
 
@@ -17,7 +17,7 @@ module Mongoid
 
     def test_should_parse_erb_expressions
       fixtures = []
-      Mongoid::FixtureKit::File.open('test/fixtures/organisations.yml') do |f|
+      Mongoid::FixtureKit::File.parse('test/fixtures/organisations.yml') do |f|
         f.each { |name, row| fixtures << [name, row] }
       end
 
@@ -32,7 +32,7 @@ module Mongoid
       tmpfile.rewind
 
       assert_raises(Mongoid::FixtureKit::FormatError) do
-        Mongoid::FixtureKit::File.open(tmpfile.path, &:to_a)
+        Mongoid::FixtureKit::File.parse(tmpfile.path, &:to_a)
       end
     ensure
       tmpfile&.close
@@ -45,7 +45,7 @@ module Mongoid
       tmpfile.rewind
 
       fixtures = []
-      Mongoid::FixtureKit::File.open(tmpfile.path) do |f|
+      Mongoid::FixtureKit::File.parse(tmpfile.path) do |f|
         f.each { |name, row| fixtures << [name, row] }
       end
 
@@ -61,7 +61,7 @@ module Mongoid
       tmpfile.rewind
 
       assert_raises(Mongoid::FixtureKit::FormatError) do
-        Mongoid::FixtureKit::File.open(tmpfile.path, &:to_a)
+        Mongoid::FixtureKit::File.parse(tmpfile.path, &:to_a)
       end
     ensure
       tmpfile&.close
@@ -74,7 +74,7 @@ module Mongoid
       tmpfile.rewind
 
       assert_raises(Mongoid::FixtureKit::FormatError) do
-        Mongoid::FixtureKit::File.open(tmpfile.path, &:to_a)
+        Mongoid::FixtureKit::File.parse(tmpfile.path, &:to_a)
       end
     ensure
       tmpfile&.close

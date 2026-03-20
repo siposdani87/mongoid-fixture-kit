@@ -156,15 +156,7 @@ module Mongoid
         if document.nil?
           document = model.new
           document['__fixture_name'] = fixture_name
-          begin
-            save_document(document)
-          rescue Mongo::Error, Mongoid::Errors::MongoidError => e
-            if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
-              Rails.logger.debug(document.attributes)
-              Rails.logger.debug(e)
-              Rails.logger.debug { "Backtrace:\n\t#{e.backtrace.join("\n\t")}" }
-            end
-          end
+          save_document(document)
         end
         document
       end
@@ -176,13 +168,12 @@ module Mongoid
       end
 
       def collection_documents(fixture_kit)
-        # allow a standard key to be used for doing defaults in YAML
-        fixture_kit.fixtures.delete('DEFAULTS')
-
         # track any join collection we need to insert later
         documents = {}
+        # allow a standard key to be used for doing defaults in YAML
+        fixtures = fixture_kit.fixtures.except('DEFAULTS')
         documents[fixture_kit.class_name] =
-          fixture_kit.fixtures.map do |label, fixture|
+          fixtures.map do |label, fixture|
             unmarshall_fixture(label, fixture, fixture_kit.model_class)
           end
         documents
@@ -226,10 +217,10 @@ module Mongoid
         end
 
         # Save and reload to hydrate embedded documents from stored hash data.
-        if embedded_attrs.any?
-          save_document(document)
-          document.reload
-        end
+        return if embedded_attrs.none?
+
+        save_document(document)
+        document.reload
       end
 
       def resolve_embedded_belongs_to(embedded_class, attrs)

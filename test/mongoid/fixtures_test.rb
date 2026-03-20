@@ -49,4 +49,21 @@ class FixturesTest < BaseTest
     assert_equal('Geoffroy', geoffroy.firstname)
     assert_equal('Dad', dad.firstname)
   end
+
+  def test_teardown_fixtures_resets_cache
+    assert_not_empty(self.class.util.cached_fixtures)
+    teardown_fixtures
+    assert_empty(self.class.util.cached_fixtures)
+  end
+
+  def test_fixtures_all_loads_every_yaml_file
+    fixture_names = Dir["#{self.class.fixture_path}/{**,*}/*.{yml}"]
+    fixture_names.map! { |f| f[(self.class.fixture_path.to_s.length + 1)..-5] }
+
+    assert_includes(fixture_names, 'users')
+    assert_includes(fixture_names, 'groups')
+    assert_includes(fixture_names, 'schools')
+    assert_includes(fixture_names, 'organisations')
+    assert_includes(fixture_names, 'not_models')
+  end
 end

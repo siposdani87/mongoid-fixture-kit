@@ -5,7 +5,7 @@ module Mongoid
     class File
       include Enumerable
 
-      def self.open(file)
+      def self.parse(file)
         x = new(file)
         block_given? ? yield(x) : x
       end

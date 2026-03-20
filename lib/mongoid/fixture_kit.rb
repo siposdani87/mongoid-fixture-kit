@@ -52,7 +52,7 @@ module Mongoid
       yaml_files.each_with_object({}) do |file, fixtures|
         next unless ::File.exist?(file)
 
-        Mongoid::FixtureKit::File.open(file) do |f|
+        Mongoid::FixtureKit::File.parse(file) do |f|
           f.each do |fixture_name, row|
             fixtures[fixture_name] = Mongoid::FixtureKit::Fixture.new(fixture_name, row, model_class)
           end

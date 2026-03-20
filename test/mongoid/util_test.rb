@@ -71,5 +71,42 @@ module Mongoid
       macro = util.macro_from_relation(relation)
       assert_equal(:embeds_one, macro)
     end
+
+    def test_embedded_default_fields_are_removed_when_matching
+      util = Mongoid::FixtureKit::Util.new
+      util.reset_cache
+      util.create_fixtures('test/fixtures/', %w[users groups schools organisations])
+
+      # Address has `field :real, type: Boolean, default: true`
+      # The fixture for user1 does not set `real`, so the default should apply
+      user = User.find_by(firstname: 'Margot')
+      assert_not_nil(user.address)
+      # The default value is true; since it wasn't overridden, it should be present
+      assert_equal(true, user.address.real)
+    end
+
+    def test_nested_embedded_belongs_to_resolved_via_sanitize
+      util = Mongoid::FixtureKit::Util.new
+      util.reset_cache
+      util.create_fixtures('test/fixtures/', %w[users groups schools organisations])
+
+      user = User.find_by(firstname: 'Margot')
+      home = user.homes.first
+      assert_not_nil(home.address)
+      organization = Organisation.find_by(name: '1 Organisation')
+      assert_equal(organization.id, home.address.organisation_id)
+    end
+
+    def test_find_or_create_document_propagates_errors
+      util = Mongoid::FixtureKit::Util.new
+      # Use a nonexistent collection with an invalid document to trigger a save error.
+      # After removing the rescue block, errors should propagate.
+      # We verify by checking that find_or_create_document does NOT silently return
+      # an unsaved document when the model exists and can be saved.
+      util.reset_cache
+      util.create_fixtures('test/fixtures/', %w[users groups schools organisations])
+      doc = util.find_or_create_document(User, 'geoffroy')
+      assert(doc.persisted?, 'Document should be persisted after find_or_create_document')
+    end
   end
 end
