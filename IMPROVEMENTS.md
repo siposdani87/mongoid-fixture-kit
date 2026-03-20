@@ -1,6 +1,6 @@
 # Improvement Plan
 
-Prioritized list of improvements for the mongoid-fixture_kit project.
+All items completed.
 
 ## Critical
 
@@ -16,7 +16,7 @@ Prioritized list of improvements for the mongoid-fixture_kit project.
 ## Medium — Metadata and Docs
 
 1. ~~**Missing gemspec metadata** — Add `homepage_uri`, `source_code_uri`, `changelog_uri`, `bug_tracker_uri`~~ DONE
-2. **No CHANGELOG.md** — Version jumped 0.3.1 to 0.4.0 with no record of changes
+2. ~~**No CHANGELOG.md** — Version jumped 0.3.1 to 0.4.0 with no record of changes~~ DONE
 3. ~~**`sonar-project.properties` version is stale** — Still says 0.3.1, should be 0.4.0~~ DONE
 4. ~~**README uses deprecated Rails 4 syntax** — `get :show, id: @user` should be `get :show, params: { id: @user }`~~ DONE
 5. ~~**README doesn't document ERB or `$LABEL` support** — Both are supported features but undocumented~~ DONE
@@ -30,5 +30,5 @@ Prioritized list of improvements for the mongoid-fixture_kit project.
 
 1. ~~**Silent error swallowing in `find_or_create_document`** — Rescues `StandardError` and logs to `Rails.logger` which may not exist outside Rails~~ DONE
 2. ~~**`# type code here` placeholder comments** — Two `else` branches in `util.rb` have stale placeholders~~ DONE
-3. **Broad `rescue StandardError` in `apply_embedded_attributes`** — Hides real errors by falling back to bracket assignment
-4. **`update_document` mutates input hash** — `attributes.delete` calls can cause subtle ordering bugs; should work on a duplicate
+3. ~~**Broad `rescue StandardError` in `apply_embedded_attributes`** — Narrowed to `Mongoid::Errors::MongoidError`~~ DONE
+4. ~~**`update_document` mutates input hash** — Now works on a duplicate via `attributes.dup`~~ DONE

@@ -73,6 +73,7 @@ module Mongoid
       end
 
       def update_document(document, attributes)
+        attributes = attributes.dup
         attributes.delete('_id') if document.attributes.key?('_id')
 
         # Extract embedded document attributes before processing.
@@ -214,7 +215,7 @@ module Mongoid
           end
 
           document.public_send("#{name}=", attrs)
-        rescue StandardError
+        rescue Mongoid::Errors::MongoidError
           document[name] = attrs
         end
       end
