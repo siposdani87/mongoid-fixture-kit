@@ -4,3 +4,7 @@ test:
       database: mongoid_fixture_kit_test
       hosts:
         - localhost:27017
+      options:
+        user: <%= ENV.fetch('MONGODB_USER', nil) %>
+        password: <%= ENV.fetch('MONGODB_PASSWORD', nil) %>
+        auth_source: <%= ENV.fetch('MONGODB_AUTH_SOURCE', 'admin') %>

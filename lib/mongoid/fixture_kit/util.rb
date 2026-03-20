@@ -131,8 +131,6 @@ module Mongoid
               doc = find_or_create_document(relation.class_name, value)
               document.attributes[relation.foreign_key] = doc.id
             end
-          else
-            # type code here
           end
         end
       end
@@ -159,9 +157,11 @@ module Mongoid
           begin
             save_document(document)
           rescue StandardError => e
-            Rails.logger.debug(document.attributes)
-            Rails.logger.debug(e)
-            Rails.logger.debug { "Backtrace:\n\t#{e.backtrace.join("\n\t")}" }
+            if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
+              Rails.logger.debug(document.attributes)
+              Rails.logger.debug(e)
+              Rails.logger.debug { "Backtrace:\n\t#{e.backtrace.join("\n\t")}" }
+            end
           end
         end
         document
@@ -232,7 +232,7 @@ module Mongoid
       private
 
       def save_document(doc)
-        doc.save({ validate: false })
+        doc.save(validate: false)
       end
 
       def unmarshall_fixture(label, attributes, model_class)
@@ -270,8 +270,6 @@ module Mongoid
             unmarshall_has_many(model_class, attributes, relation)
           when :has_and_belongs_to_many
             unmarshall_has_and_belongs_to_many(model_class, attributes, relation)
-          else
-            # type code here
           end
         end
 

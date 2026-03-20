@@ -1,4 +1,3 @@
-require 'pry'
 require 'test_helper'
 
 module Mongoid
@@ -26,22 +25,16 @@ module Mongoid
       fs = fs.first
       fixture = fs['error']
 
-      begin
+      assert_raises(Mongoid::FixtureKit::FixtureClassNotFound) do
         fixture.find
-        assert(false, 'No exception has been raised')
-      rescue Mongoid::FixtureKit::FixtureClassNotFound
-        assert(true)
       end
     end
 
     test 'should raised if nested polymorphic relation' do
       util = Mongoid::FixtureKit::Util.new
       util.reset_cache
-      begin
-        _fs = util.create_fixtures('test/nested_polymorphic_relation_fixtures', %w[groups])
-        assert(false)
-      rescue Mongoid::FixtureKit::FixtureError
-        assert(true)
+      assert_raises(Mongoid::FixtureKit::FixtureError) do
+        util.create_fixtures('test/nested_polymorphic_relation_fixtures', %w[groups])
       end
     end
 
