@@ -1,0 +1,8 @@
+DEFAULTS:
+  name: Default Group
+
+custom_group:
+  name: Custom Group
+
+default_group:
+  {}

@@ -38,9 +38,9 @@ class UsersControllerTest < ActionController::TestCase
   setup do
     @user = users(:user_1)
   end
-  
+
   test 'should show user' do
-    get :show, id: @user
+    get :show, params: { id: @user }
     assert_response :success
   end
 end
@@ -48,13 +48,38 @@ end
 
 ### Features
 
-- Creation of a document from a YAML file.
+- Creation of a document from a YAML file
 - ERB inside YAML files
+- `$LABEL` interpolation in fixture values
 - `belongs_to` relations
 - Polymorphic `belongs_to`
 - `has_many` relations
 - `has_and_belongs_to_many` relations
+- Embedded documents (`embeds_one`, `embeds_many`)
 - `TestHelper` module to include in your tests
+
+### ERB in Fixtures
+
+You can use ERB in your YAML fixture files to generate dynamic data:
+
+```yaml
+<% 5.times do |i| %>
+school<%= i %>:
+  name: School <%= i %>
+<% end %>
+```
+
+### Label Interpolation
+
+Use `$LABEL` in fixture values to reference the fixture's own name:
+
+```yaml
+user_john:
+  username: $LABEL
+  email: $LABEL@example.com
+```
+
+This will set `username` to `"user_john"` and `email` to `"user_john@example.com"`.
 
 ### Notes
 

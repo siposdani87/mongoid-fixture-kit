@@ -18,18 +18,12 @@ Prioritized list of improvements for the mongoid-fixture_kit project.
 1. ~~**Missing gemspec metadata** — Add `homepage_uri`, `source_code_uri`, `changelog_uri`, `bug_tracker_uri`~~ DONE
 2. **No CHANGELOG.md** — Version jumped 0.3.1 to 0.4.0 with no record of changes
 3. ~~**`sonar-project.properties` version is stale** — Still says 0.3.1, should be 0.4.0~~ DONE
-4. **README uses deprecated Rails 4 syntax** — `get :show, id: @user` should be `get :show, params: { id: @user }`
-5. **README doesn't document ERB or `$LABEL` support** — Both are supported features but undocumented
+4. ~~**README uses deprecated Rails 4 syntax** — `get :show, id: @user` should be `get :show, params: { id: @user }`~~ DONE
+5. ~~**README doesn't document ERB or `$LABEL` support** — Both are supported features but undocumented~~ DONE
 
 ## Medium — Test Coverage
 
-1. **Thin test suite (~10 tests)** — Missing coverage for:
-    - Error paths (`FixtureNotFound`, `FormatError`)
-    - `:reload` flag on fixture accessors
-    - `$LABEL` interpolation
-    - Timestamp auto-setting (`created_at`, `updated_at`, `c_at`, `u_at`)
-    - `DEFAULTS` key removal
-    - ERB rendering in fixture files
+1. ~~**Thin test suite (~10 tests)** — Missing coverage for error paths, reload flag, $LABEL, timestamps, DEFAULTS, ERB, embedded docs~~ DONE (29 tests, 68 assertions, 94% coverage)
 2. ~~**Test style issues** — `require 'pry'` left in test file, `begin/rescue/assert(false)` pattern instead of idiomatic `assert_raises`~~ DONE
 
 ## Lower — Code Quality
