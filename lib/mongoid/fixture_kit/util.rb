@@ -75,6 +75,12 @@ module Mongoid
       def update_document(document, attributes)
         attributes.delete('_id') if document.attributes.key?('_id')
 
+        # Extract embedded document attributes before processing.
+        # In Mongoid 8+, document["field"] = hash (bracket notation) stores the raw hash
+        # but does NOT build the embedded model object, so document.field returns nil.
+        # We handle embedded docs separately via proper setters.
+        embedded_attrs = extract_embedded_attributes(document, attributes)
+
         keys = (attributes.keys + document.attributes.keys).uniq
         keys.each do |key|
           value = attributes[key] || document[key]
@@ -88,6 +94,7 @@ module Mongoid
         end
 
         sanitize_new_embedded_documents(document)
+        apply_embedded_attributes(document, embedded_attrs)
         save_document(document)
         document
       end
@@ -177,6 +184,49 @@ module Mongoid
             unmarshall_fixture(label, fixture, fixture_kit.model_class)
           end
         documents
+      end
+
+      def extract_embedded_attributes(document, attributes)
+        embedded_attrs = {}
+        document.relations.each do |name, relation|
+          macro = macro_from_relation(relation)
+          next unless %i[embeds_one embeds_many].include?(macro)
+          next unless attributes.key?(name) && (attributes[name].is_a?(Hash) || attributes[name].is_a?(Array))
+
+          embedded_attrs[name] = attributes.delete(name).dup
+        end
+        embedded_attrs
+      end
+
+      def apply_embedded_attributes(document, embedded_attrs)
+        embedded_attrs.each do |name, attrs|
+          relation = document.relations[name]
+          next unless relation
+
+          # Resolve belongs_to fixture references within embedded attrs before
+          # calling the setter, because Mongoid's setter won't resolve them.
+          embedded_class = relation.class_name.constantize
+          case macro_from_relation(relation)
+          when :embeds_one
+            resolve_embedded_belongs_to(embedded_class, attrs) if attrs.is_a?(Hash)
+          when :embeds_many
+            Array(attrs).each { |item| resolve_embedded_belongs_to(embedded_class, item) if item.is_a?(Hash) }
+          end
+
+          document.public_send("#{name}=", attrs)
+        rescue StandardError
+          document[name] = attrs
+        end
+      end
+
+      def resolve_embedded_belongs_to(embedded_class, attrs)
+        embedded_class.relations.each do |rel_name, rel|
+          next unless macro_from_relation(rel) == :belongs_to
+          next unless attrs.key?(rel_name) && attrs[rel_name].is_a?(String)
+
+          doc = find_or_create_document(rel.class_name, attrs.delete(rel_name))
+          attrs[rel.foreign_key] = doc.id
+        end
       end
 
       private
