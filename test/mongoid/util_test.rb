@@ -12,14 +12,15 @@ module Mongoid
       assert_equal('School 0', school0['name'])
     end
 
-    def test_defaults_key_is_removed
+    def test_defaults_key_is_not_persisted
       util = Mongoid::FixtureKit::Util.new
       util.reset_cache
       fs = util.create_fixtures('test/fixtures_with_defaults', %w[groups])
 
       groups = fs.find { |x| x.model_class == Group }
-      assert_nil(groups['DEFAULTS'])
       assert_not_nil(groups['custom_group'])
+      # DEFAULTS should not be created as a document in the database
+      assert_nil(Group.where(__fixture_name: 'DEFAULTS').first)
     end
 
     def test_cached_fixtures_returns_empty_when_no_cache

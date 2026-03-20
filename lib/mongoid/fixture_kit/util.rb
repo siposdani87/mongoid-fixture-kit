@@ -225,11 +225,23 @@ module Mongoid
 
       def resolve_embedded_belongs_to(embedded_class, attrs)
         embedded_class.relations.each do |rel_name, rel|
-          next unless macro_from_relation(rel) == :belongs_to
-          next unless attrs.key?(rel_name) && attrs[rel_name].is_a?(String)
+          macro = macro_from_relation(rel)
 
-          doc = find_or_create_document(rel.class_name, attrs.delete(rel_name))
-          attrs[rel.foreign_key] = doc.id
+          case macro
+          when :belongs_to
+            next unless attrs.key?(rel_name) && attrs[rel_name].is_a?(String)
+
+            doc = find_or_create_document(rel.class_name, attrs.delete(rel_name))
+            attrs[rel.foreign_key] = doc.id
+          when :embeds_one
+            next unless attrs.key?(rel_name) && attrs[rel_name].is_a?(Hash)
+
+            resolve_embedded_belongs_to(rel.class_name.constantize, attrs[rel_name])
+          when :embeds_many
+            next unless attrs.key?(rel_name) && attrs[rel_name].is_a?(Array)
+
+            attrs[rel_name].each { |item| resolve_embedded_belongs_to(rel.class_name.constantize, item) if item.is_a?(Hash) }
+          end
         end
       end
 
