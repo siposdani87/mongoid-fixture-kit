@@ -14,6 +14,10 @@ module Mongoid
       @context_class ||= Class.new
     end
 
+    def self.reset_context_class!
+      @context_class = nil
+    end
+
     def initialize(name, class_name, path)
       @name = name
       @path = path
@@ -46,6 +50,8 @@ module Mongoid
       yaml_files = files.push("#{path}.yml")
 
       yaml_files.each_with_object({}) do |file, fixtures|
+        next unless ::File.exist?(file)
+
         Mongoid::FixtureKit::File.open(file) do |f|
           f.each do |fixture_name, row|
             fixtures[fixture_name] = Mongoid::FixtureKit::Fixture.new(fixture_name, row, model_class)

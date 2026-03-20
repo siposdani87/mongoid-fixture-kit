@@ -44,3 +44,9 @@ Bundler/GemComment:
 Style/StringHashKeys:
   Exclude:
     - 'test/**/*'
+Style/MapIntoArray:
+  Exclude:
+    - 'test/**/*'
+Style/HashEachMethods:
+  Exclude:
+    - 'test/**/*'

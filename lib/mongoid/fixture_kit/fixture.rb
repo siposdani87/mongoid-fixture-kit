@@ -1,8 +1,6 @@
 module Mongoid
   class FixtureKit
     class Fixture
-      include Enumerable
-
       attr_reader :name, :fixture, :model_class
 
       def initialize(name, fixture, model_class)

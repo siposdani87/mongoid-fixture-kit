@@ -12,7 +12,8 @@ module Mongoid
     end
 
     def test_should_iterate_with_each
-      keys = @fixture.map { |k, _v| k }
+      keys = []
+      @fixture.each { |k, _v| keys << k }
       assert_includes(keys, 'firstname')
       assert_includes(keys, 'lastname')
     end

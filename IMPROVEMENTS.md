@@ -54,6 +54,6 @@
 
 ## Round 2 — Lower Priority
 
-1. **`FixtureKit.context_class` leaks state** — accumulated modules never reset
-2. **`Fixture` includes `Enumerable` unnecessarily** — confusing API surface
-3. **`read_fixture_files` no graceful error for missing YAML** — `Errno::ENOENT` with no context
+1. ~~**`FixtureKit.context_class` leaks state** — added `reset_context_class!` method~~ DONE
+2. ~~**`Fixture` includes `Enumerable` unnecessarily** — removed, kept `each` and `[]` delegation~~ DONE
+3. ~~**`read_fixture_files` no graceful error for missing YAML** — skip missing files gracefully~~ DONE
