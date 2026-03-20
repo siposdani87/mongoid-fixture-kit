@@ -9,7 +9,10 @@ SimpleCov.configure do
   add_filter '/test/'
 end
 SimpleCov.start do
-  formatter(SimpleCov::Formatter::JSONFormatter)
+  formatter(SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::JSONFormatter
+  ]))
 end
 
 require 'minitest/autorun'

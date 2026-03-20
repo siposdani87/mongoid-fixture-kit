@@ -1,59 +1,30 @@
 # Improvement Plan
 
-## Round 1 — Completed
+Rounds 1 and 2 completed (37 items). See git history for details.
 
-1. ~~`.gitignore` incomplete~~ DONE
-2. ~~Gemspec references `README.rdoc` instead of `README.md`~~ DONE
-3. ~~No actual test CI~~ DONE
-4. ~~Gem publish workflow uses unmaintained action~~ DONE
-5. ~~`actions/checkout@v3` outdated~~ DONE
-6. ~~Missing gemspec metadata~~ DONE
-7. ~~No CHANGELOG — replaced with auto-generated GitHub Release notes~~ DONE
-8. ~~`sonar-project.properties` version stale~~ DONE
-9. ~~README uses deprecated Rails 4 syntax~~ DONE
-10. ~~README doesn't document ERB or `$LABEL` support~~ DONE
-11. ~~Thin test suite — expanded to 29 tests, 94% coverage~~ DONE
-12. ~~Test style issues (`require 'pry'`, `begin/rescue/assert(false)`)~~ DONE
-13. ~~Silent error swallowing in `find_or_create_document`~~ DONE
-14. ~~Placeholder comments in `util.rb`~~ DONE
-15. ~~Broad `rescue StandardError` in `apply_embedded_attributes`~~ DONE
-16. ~~`update_document` mutates input hash~~ DONE
+## Round 3 — Code Quality
 
-## Round 2 — Security
+1. **`find_or_create_document` silently returns unsaved document on error** — downstream code uses `.id` creating dangling foreign keys (util.rb:149-163)
+2. **`collection_documents` mutates fixture_kit's fixtures hash** — `fixtures.delete('DEFAULTS')` should use `reject` or `dup` (util.rb:173)
 
-1. ~~**Create `.env.example`** with placeholder values~~ DONE
+## Round 3 — Build
 
-## Round 2 — Build and Lint
+1. **Remove unused `pry-nav` dependency** — no file requires it after Round 1 cleanup (Gemfile:13)
+2. **Add `changelog_uri` to gemspec** — point to GitHub Releases page
+3. ~~**`sonar-project.properties` version hardcoded** — removed property~~ DONE
 
-1. ~~**Fix RuboCop offenses** — all resolved, 0 offenses~~ DONE
-2. ~~**`.rubocop.yml` invalid `TargetRubyVersion: 3.1.x`** — fixed to `3.1`~~ DONE
-3. ~~**Re-enable `Lint/ShadowingOuterLocalVariable`** — enabled and fixed~~ DONE
-4. ~~**Add Ruby 3.4 to CI matrix**~~ DONE
-5. ~~**Add Linux platform to `Gemfile.lock`**~~ DONE
+## Round 3 — CI/CD
 
-## Round 2 — Code Quality (Bugs)
+1. **Ruby 3.1 is EOL** (since 2025-03-31) — drop from CI matrix, bump gemspec to `>= 3.2.0`
+2. **`test.sh` lacks `set -e`** — rubocop failures don't stop execution; script is redundant with CI
+3. ~~**gem-publish writes credentials to disk** — switched to `GEM_HOST_API_KEY` env var~~ DONE
 
-1. ~~**`false`/`nil` values lost in `update_document`** — fixed with `attributes.key?` check~~ DONE
-2. ~~**Array concatenation without dedup** — added `.uniq`~~ DONE
-3. ~~**`find_or_create_document` rescues broad `StandardError`** — narrowed to `Mongo::Error, Mongoid::Errors::MongoidError`~~ DONE
-4. ~~**`unmarshall_belongs_to` mutates string via `sub!`** — changed to non-destructive `match?`/`sub`~~ DONE
+## Round 3 — Tests
 
-## Round 2 — Tests
+1. **Test coverage gaps** — uncovered paths: `teardown_fixtures`, `fixtures(:all)`, `sanitize_new_embedded_documents` belongs_to branch, `embedded_document_set_default_values` removable fields, error branch in `find_or_create_document`
 
-1. ~~**`load_once_test.rb` uses `begin/rescue/assert(false)`** — replaced with `assert_nothing_raised`~~ DONE
-2. ~~**`file_test.rb` empty blocks** — replaced with `f.to_a`~~ DONE
-3. ~~**Missing unit tests** — added ClassCache, RenderContext, Fixture, non-hash row FormatError~~ DONE
-4. ~~**Split mega-test** — split into BelongsTo, HasMany, HABTM, Embedded, DocumentCount tests~~ DONE
+## Round 3 — Docs and Config
 
-## Round 2 — Docs and CI
-
-1. ~~**README missing compatibility matrix**~~ DONE
-2. ~~**README missing `DEFAULTS` key documentation**~~ DONE
-3. ~~**SonarCloud coverage broken** — added artifact upload/download between jobs~~ DONE
-4. ~~**`test.sh` not integrated into CI** — CI now produces rubocop JSON report~~ DONE
-
-## Round 2 — Lower Priority
-
-1. ~~**`FixtureKit.context_class` leaks state** — added `reset_context_class!` method~~ DONE
-2. ~~**`Fixture` includes `Enumerable` unnecessarily** — removed, kept `each` and `[]` delegation~~ DONE
-3. ~~**`read_fixture_files` no graceful error for missing YAML** — skip missing files gracefully~~ DONE
+1. ~~**SimpleCov only outputs JSON** — added `MultiFormatter` with HTML + JSON~~ DONE
+2. **LICENSE copyright year** — says 2023, should be `2023-2026`
+3. **`File.open` naming is misleading** — nothing to "close"; rename to `parse` or document

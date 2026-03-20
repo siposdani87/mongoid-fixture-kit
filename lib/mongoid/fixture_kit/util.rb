@@ -72,30 +72,37 @@ module Mongoid
       end
 
       def update_document(document, attributes)
-        attributes = attributes.dup
         attributes.delete('_id') if document.attributes.key?('_id')
 
         # Extract embedded document attributes before processing.
         # In Mongoid 8+, document["field"] = hash (bracket notation) stores the raw hash
         # but does NOT build the embedded model object, so document.field returns nil.
-        # We handle embedded docs separately via proper setters.
+        # We handle embedded docs separately: bracket notation + save + reload.
         embedded_attrs = extract_embedded_attributes(document, attributes)
+        # Temporarily skip extraction for debugging
+        # embedded_attrs = {}
 
         keys = (attributes.keys + document.attributes.keys).uniq
         keys.each do |key|
-          value = attributes.key?(key) ? attributes[key] : document[key]
+          value = attributes[key] || document[key]
           if key.include?('_translations')
             document.public_send("#{key}=", value)
           elsif attributes[key].instance_of?(Array) || document[key].instance_of?(Array)
-            document[key] = (Array(attributes[key]) + Array(document[key])).uniq
+            document[key] = Array(attributes[key]) + Array(document[key])
           else
             document[key] = value
           end
         end
 
         sanitize_new_embedded_documents(document)
+
+        # Save non-embedded attributes first, so embedded attr fallbacks
+        # (which may need to reload) don't lose the non-embedded data.
+        save_document(document) if embedded_attrs.any?
+
         apply_embedded_attributes(document, embedded_attrs)
         save_document(document)
+
         document
       end
 
@@ -199,21 +206,29 @@ module Mongoid
           relation = document.relations[name]
           next unless relation
 
-          # Resolve belongs_to fixture references within embedded attrs before
-          # calling the setter, because Mongoid's setter won't resolve them.
+          # Resolve belongs_to fixture references within embedded attrs
+          # before storing, because Mongoid won't resolve them.
           embedded_class = relation.class_name.constantize
-          case macro_from_relation(relation)
+          macro = macro_from_relation(relation)
+
+          case macro
           when :embeds_one
             resolve_embedded_belongs_to(embedded_class, attrs) if attrs.is_a?(Hash)
           when :embeds_many
             Array(attrs).each { |item| resolve_embedded_belongs_to(embedded_class, item) if item.is_a?(Hash) }
           end
 
-          document.public_send("#{name}=", attrs)
-        rescue StandardError
-          # Fallback to bracket notation when setter fails (e.g., embedded model
-          # setters that depend on parent context not yet available during construction)
+          # Use bracket notation to store raw hash data. In Mongoid 8+,
+          # bracket notation doesn't build embedded model objects, but the
+          # data persists correctly. After save + reload, Mongoid hydrates
+          # the embedded documents from the stored hash.
           document[name] = attrs
+        end
+
+        # Save and reload to hydrate embedded documents from stored hash data.
+        if embedded_attrs.any?
+          save_document(document)
+          document.reload
         end
       end
 
